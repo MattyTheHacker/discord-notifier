@@ -58,3 +58,4 @@ ruff = "^0.12.1"
 
 [tool.poetry.dependencies]
 py-cord = "^2.6.1"
+python-dotenv = "^1.1.1"
