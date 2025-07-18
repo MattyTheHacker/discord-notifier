@@ -1,3 +1,5 @@
 .env
 .venv
 *.log
+notifier_members.txt
+__pycache__
