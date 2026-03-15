@@ -71,5 +71,36 @@ async def on_message(message: discord.Message) -> None:
         logger.warning(f"Could not send message to {user_to_notify.name}, they might have DMs disabled.")
 
 
+@notifier.slash_command(  # type: ignore[no-untyped-call, misc]
+    name="export",
+    description="Export the last certain number of messages from the current channel.",
+)
+async def export_message(ctx: discord.ApplicationContext) -> None:  # type: ignore[misc]
+    """Slash command to export messages from the current channel."""
+    logger.info(f"Export command invoked by {ctx.author} in {ctx.channel}")
+
+    if not ctx.channel:
+        await ctx.respond("This command can only be used in a text channel.", ephemeral=True)
+        return
+    
+    await ctx.defer(ephemeral=True)
+    
+    channel_messages: list[tuple[str, str, str]] = []
+
+    channel: discord.TextChannel = ctx.channel
+    message: discord.Message
+
+    async for message in channel.history():
+        channel_messages.append((message.author.name, message.content, message.created_at.isoformat()))
+
+    with open("exported_messages.txt", "w", encoding="utf-8") as file:
+        for author, content, timestamp in channel_messages:
+            file.write(f"{timestamp} | {author}: {content}\n")
+
+    file.close()
+    
+    await ctx.followup.send("Messages exported successfully!", ephemeral=True, file=discord.File("exported_messages.txt"))
+
+
 notifier.run(bot_token)
 
