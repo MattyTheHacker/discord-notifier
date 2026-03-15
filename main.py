@@ -71,7 +71,7 @@ async def on_message(message: discord.Message) -> None:
         logger.warning(f"Could not send message to {user_to_notify.name}, they might have DMs disabled.")
 
 
-@notifier.slash_command(  # type: ignore[no-untyped-call, misc]
+@notifier.slash_command(  # type: ignore[untyped-decorator, no-untyped-call]
     name="export",
     description="Export the last certain number of messages from the current channel.",
 )
@@ -90,7 +90,7 @@ async def export_message(ctx: discord.ApplicationContext) -> None:  # type: igno
     channel: discord.TextChannel = ctx.channel
     message: discord.Message
 
-    async for message in channel.history():
+    async for message in channel.history(limit=200000):
         channel_messages.append((message.author.name, message.content, message.created_at.isoformat()))
 
     with open("exported_messages.txt", "w", encoding="utf-8") as file:
